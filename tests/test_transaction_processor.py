@@ -19,7 +19,6 @@ def test_small_shipment_matches_lowest_small_package_price():
 
 @pytest.mark.part1
 def test_every_third_large_shipment_via_lp_should_be_free_once_per_month():
-
     transactions = [
         {"date": "2015-02-01", "package_size": "L", "carrier": "LP"},
         {"date": "2015-03-01", "package_size": "L", "carrier": "MR"},
@@ -73,6 +72,27 @@ def test_accumulated_discounts_cannot_exceed_10_eur_per_month():
         {"reduced_price": Decimal("1.90"), "applied_discount": Decimal("0.10")},
         {"reduced_price": Decimal("2.00"), "applied_discount": None},
         {"reduced_price": Decimal("1.50"), "applied_discount": Decimal("0.50")},
+    ]
+
+    _check_prices(transactions, expected_prices)
+
+@pytest.mark.part1
+def test_lp_discount_over_two_months():
+    transactions = [{"date": "2023-07-01", "package_size": "L", "carrier": "LP"},
+                    {"date": "2023-07-02", "package_size": "L", "carrier": "LP"},
+                    {"date": "2023-07-03", "package_size": "L", "carrier": "LP"},
+                    {"date": "2023-07-04", "package_size": "L", "carrier": "LP"},
+                    {"date": "2023-07-05", "package_size": "L", "carrier": "LP"},
+                    {"date": "2023-08-01", "package_size": "L", "carrier": "LP"},
+                    ]
+
+    expected_prices = [
+        {"reduced_price": Decimal("6.90"), "applied_discount": None},
+        {"reduced_price": Decimal("6.90"), "applied_discount": None},
+        {"reduced_price": Decimal("0.00"), "applied_discount": Decimal("6.90")},
+        {"reduced_price": Decimal("6.90"), "applied_discount": None},
+        {"reduced_price": Decimal("6.90"), "applied_discount": None},
+        {"reduced_price": Decimal("0.00"), "applied_discount": Decimal("6.90")},
     ]
 
     _check_prices(transactions, expected_prices)
